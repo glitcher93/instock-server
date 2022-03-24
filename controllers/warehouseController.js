@@ -82,3 +82,11 @@ const deleteWarehouse = (req, res) => {
     const newWarehouseData = warehouseData.filter(warehouse => warehouse.id !== warehouseId);
     writeWarehouses(newWarehouseData);
 }
+
+module.exports = {
+    getAllWarehouses,
+    getSingleWarehouse,
+    postNewWarehouse,
+    updateWarehouse,
+    deleteWarehouse
+}
