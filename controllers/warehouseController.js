@@ -1,5 +1,7 @@
 const readWarehouses = require("../utils/readWrite").readWarehouses;
 const writeWarehouses = require("../utils/readWrite").writeWarehouses;
+const readInventory = require("../utils/readWrite").readInventory;
+const writeInventory = require("../utils/readWrite").writeInventory;
 const { v4: uuidv4 } = require("uuid");
 
 const getAllWarehouses = (req, res) => {
@@ -65,4 +67,18 @@ const updateWarehouse = (req, res) => {
         writeWarehouses(warehouseData);
         res.status(200).json(foundWarehouse);
     }
+}
+
+const deleteWarehouse = (req, res) => {
+    const warehouseData = readWarehouses();
+    const inventoryData = readInventory();
+    const warehouseId = req.params.id;
+    const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId);
+    if (!foundWarehouse) {
+        res.status(404).send("Warehouse not found");
+    }
+    const newInventoryData = inventoryData.filter(item => item.warehouseID !== warehouseId);
+    writeInventory(newInventoryData);
+    const newWarehouseData = warehouseData.filter(warehouse => warehouse.id !== warehouseId);
+    writeWarehouses(newWarehouseData);
 }
