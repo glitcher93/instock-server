@@ -7,3 +7,13 @@ const getAllInventoryItems = (req, res) => {
     const inventoryData = readInventory();
     res.status(200).json(inventoryData);
 }
+
+const getSingleInventoryItem = (req, res) => {
+    const inventoryData = readInventory();
+    const inventoryId = req.params.id;
+    const foundItem = inventoryData.find(item => item.id === inventoryId);
+    if (!foundItem) {
+        res.status(404).send("Item not found")
+    }
+    res.status(200).json(foundItem)
+}
