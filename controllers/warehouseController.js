@@ -44,3 +44,25 @@ const postNewWarehouse = (req, res) => {
         res.status(201).json(newWarehouse);
     }
 }
+
+const updateWarehouse = (req, res) => {
+    const { name, address, city, country, contact } = req.body;
+    const emailRegEx = /\S+@\S+\.\S+/;
+    const phoneRegEx = /^[+]?[1]?[\s]?[(]?[0-9]{3}[)]?[\s]?[0-9]{3}[-]?[0-9]{4}$/;
+    if (!contact.phone.match(phoneRegEx) && !contact.email.match(emailRegEx)) {
+        res.status(400).send("Phone and/or email address not formatted correctly")
+    } else {
+        const warehouseData = readWarehouses();
+        const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId)
+        if (!foundWarehouse) {
+            res.status(404).send("Warehouse not found")
+        }
+        foundWarehouse.name = name || foundWarehouse.name;
+        foundWarehouse.address = address || foundWarehouse.address;
+        foundWarehouse.city = city || foundWarehouse.city;
+        foundWarehouse.country = country || foundWarehouse.country;
+        foundWarehouse.contact = contact || foundWarehouse.contact
+        writeWarehouses(warehouseData);
+        res.status(200).json(foundWarehouse);
+    }
+}
