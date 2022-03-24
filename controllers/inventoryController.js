@@ -17,3 +17,26 @@ const getSingleInventoryItem = (req, res) => {
     }
     res.status(200).json(foundItem)
 }
+
+const postNewInventoryItem = (req, res) => {
+    const inventoryData = readInventory();
+    const warehouseData = readWarehouses();
+    const {warehouseName, itemName, description, category, status, quantity} = req.body;
+    const foundWarehouse = warehouseData.find(warehouse => warehouse.name === warehouseName);
+    if (!foundWarehouse) {
+        res.status(404).send("Warehouse not found!")
+    }
+    const newItem = {
+        id: uuidv4(),
+        warehouseID: foundWarehouse.id,
+        warehouseName,
+        itemName,
+        description,
+        category,
+        status,
+        quantity
+    }
+    inventoryData.push(newItem);
+    writeInventory(inventoryData);
+    res.status(201).json(newItem)
+}
