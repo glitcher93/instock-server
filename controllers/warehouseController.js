@@ -21,10 +21,9 @@ const getSingleWarehouse = (req, res) => {
 
 const postNewWarehouse = (req, res) => {
     const { name, address, city, country, contact } = req.body;
-    const emailRegEx = /\S+@\S+\.\S+/;
-    const phoneRegEx = /^[+]?[1]?[\s]?[(]?[0-9]{3}[)]?[\s]?[0-9]{3}[-]?[0-9]{4}$/;
-
-    if (!contact.phone.match(phoneRegEx) && !contact.email.match(emailRegEx)) {
+    const emailRegEx = /\^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
+    const phoneRegEx = /^\+\d{1,2}\s\(\d{3}\)\s\d{3}-\d{4}$/g;
+    if (!contact.phone.match(phoneRegEx) || !contact.email.match(emailRegEx)) {
         res.status(400).send("Phone and/or email address not formatted correctly")
     } else {
         const warehouseData = readWarehouses();
@@ -49,12 +48,15 @@ const postNewWarehouse = (req, res) => {
 
 const updateWarehouse = (req, res) => {
     const { name, address, city, country, contact } = req.body;
-    const emailRegEx = /\S+@\S+\.\S+/;
-    const phoneRegEx = /^[+]?[1]?[\s]?[(]?[0-9]{3}[)]?[\s]?[0-9]{3}[-]?[0-9]{4}$/;
-    if (!contact.phone.match(phoneRegEx) && !contact.email.match(emailRegEx)) {
+    const emailRegEx = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
+    const phoneRegEx = /^\+\d{1,2}\s\(\d{3}\)\s\d{3}-\d{4}$/g;;
+    console.log(contact.email.match(emailRegEx))
+    console.log(contact.phone.match(phoneRegEx))
+    if (!contact.phone.match(phoneRegEx) || !contact.email.match(emailRegEx)) {
         res.status(400).send("Phone and/or email address not formatted correctly")
     } else {
         const warehouseData = readWarehouses();
+        const warehouseId = req.params.id;
         const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId)
         if (!foundWarehouse) {
             res.status(404).send("Warehouse not found")
@@ -81,6 +83,7 @@ const deleteWarehouse = (req, res) => {
     writeInventory(newInventoryData);
     const newWarehouseData = warehouseData.filter(warehouse => warehouse.id !== warehouseId);
     writeWarehouses(newWarehouseData);
+    res.status(200).json(foundWarehouse)
 }
 
 module.exports = {
