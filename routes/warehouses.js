@@ -15,4 +15,6 @@ router
     .patch('/edit/:id', updateWarehouse)
 
 router
-    .delete('delete/:id', deleteWarehouse)
+    .delete('/delete/:id', deleteWarehouse)
+
+    module.exports = router;
