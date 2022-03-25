@@ -1,5 +1,5 @@
 const readInventory = require("../utils/readWrite").readInventory;
-const writeInventory = require("../utils/readWrite").writeInvereadInventory;
+const writeInventory = require("../utils/readWrite").writeInventory;
 const readWarehouses = require("../utils/readWrite").readWarehouses;
 const { v4: uuidv4 } = require("uuid");
 
@@ -16,6 +16,18 @@ const getSingleInventoryItem = (req, res) => {
         res.status(404).send("Item not found")
     }
     res.status(200).json(foundItem)
+}
+
+const getInventoryForSingleWarehouse = (req, res) => {
+    const inventoryData = readInventory();
+    const warehouseData = readWarehouses();
+    const warehouseId = req.params.warehouseId;
+    const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId);
+    if (!foundWarehouse) {
+        res.status(404).send("Warehouse not found!");
+    };
+    const inventory = inventoryData.filter(item => item.warehouseID === foundWarehouse.id);
+    res.status(200).json(inventory);
 }
 
 const postNewInventoryItem = (req, res) => {
@@ -60,5 +72,27 @@ const updateInventoryItem = (req, res) => {
         foundItem.quantity = 0
     }
     foundItem.quantity = quantity || foundItem.quantity;
+    writeInventory(inventoryData);
     res.status(201).json(foundItem)
+}
+
+const deleteInventoryItem = (req, res) => {
+    const inventoryData = readInventory();
+    const itemId = req.params.id;
+    const foundItem = inventoryData.find(item => item.id === itemId);
+    if (!foundItem) {
+        res.status(404).send("Item not found!")
+    }
+    const newInventoryData = inventoryData.filter(item => item.id !== foundItem.id)
+    writeInventory(newInventoryData)
+    res.status(200).json(foundItem)
+}
+
+module.exports = {
+    getAllInventoryItems,
+    getSingleInventoryItem,
+    getInventoryForSingleWarehouse,
+    postNewInventoryItem,
+    updateInventoryItem,
+    deleteInventoryItem
 }
