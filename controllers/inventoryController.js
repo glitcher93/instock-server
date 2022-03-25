@@ -40,3 +40,25 @@ const postNewInventoryItem = (req, res) => {
     writeInventory(inventoryData);
     res.status(201).json(newItem)
 }
+
+const updateInventoryItem = (req, res) => {
+    const inventoryData = readInventory();
+    const warehouseData = readWarehouses();
+    const {warehouseName, itemName, description, category, status, quantity} = req.body;
+    const foundWarehouse = warehouseData.find(warehouse => warehouse.name === warehouseName);
+    if (!foundWarehouse) {
+        res.status(404).send("Warehouse not found!")
+    }
+    const foundItem = inventoryData.find(item => item.id === req.params.id);
+    foundItem.warehouseID = foundWarehouse.id || foundItem.warehouseID;
+    foundItem.warehouseName = warehouseName || foundItem.warehouseName;
+    foundItem.itemName = itemName || foundItem.itemName;
+    foundItem.description = description || foundItem.description;
+    foundItem.category = category || foundItem.category;
+    foundItem.status = status || foundItem.status;
+    if (status === 'Out of Stock') {
+        foundItem.quantity = 0
+    }
+    foundItem.quantity = quantity || foundItem.quantity;
+    res.status(201).json(foundItem)
+}
