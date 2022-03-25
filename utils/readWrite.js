@@ -14,12 +14,12 @@ const readInventory = () => {
 
 const writeWarehouses = (data) => {
     const stringifiedData = JSON.stringify(data);
-    fs.writeFile('./data/inventories.json', stringifiedData)
+    fs.writeFileSync('./data/warehouses.json', stringifiedData)
 }
 
 const writeInventory = (data) => {
     const stringifiedData = JSON.stringify(data);
-    fs.writeFile('./data/inventories.json', stringifiedData)
+    fs.writeFileSync('./data/inventories.json', stringifiedData)
 }
 
 module.exports = {
