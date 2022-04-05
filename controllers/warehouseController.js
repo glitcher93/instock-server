@@ -21,7 +21,7 @@ const getSingleWarehouse = (req, res) => {
 
 const postNewWarehouse = (req, res) => {
     const { name, address, city, country, contact } = req.body;
-    const emailRegEx = /\^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
+    const emailRegEx = /^\([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
     const phoneRegEx = /^\+\d{1,2}\s\(\d{3}\)\s\d{3}-\d{4}$/g;
     if (!contact.phone.match(phoneRegEx) || !contact.email.match(emailRegEx)) {
         res.status(400).send("Phone and/or email address not formatted correctly")
