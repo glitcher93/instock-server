@@ -79,12 +79,13 @@ const updateInventoryItem = (req, res) => {
 const deleteInventoryItem = (req, res) => {
     const inventoryData = readInventory();
     const itemId = req.params.id;
-    const foundItem = inventoryData.find(item => item.id === itemId);
+    const foundItem = inventoryData.find(item => itemId === item.id);
+    const foundItemIndex = inventoryData.findIndex(item => item.id === itemId);
     if (!foundItem) {
         res.status(404).send("Item not found!")
     }
-    const newInventoryData = inventoryData.filter(item => item.id !== foundItem.id)
-    writeInventory(newInventoryData)
+    inventoryData.splice(foundItemIndex, 1)
+    writeInventory(inventoryData)
     res.status(200).json(foundItem)
 }
 
