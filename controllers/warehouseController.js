@@ -21,7 +21,7 @@ const getSingleWarehouse = (req, res) => {
 
 const postNewWarehouse = (req, res) => {
     const { name, address, city, country, contact } = req.body;
-    const emailRegEx = /^\([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
+    const emailRegEx = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
     const phoneRegEx = /^\+\d{1,2}\s\(\d{3}\)\s\d{3}-\d{4}$/g;
     if (!contact.phone.match(phoneRegEx) || !contact.email.match(emailRegEx)) {
         res.status(400).send("Phone and/or email address not formatted correctly")
@@ -75,14 +75,19 @@ const deleteWarehouse = (req, res) => {
     const warehouseData = readWarehouses();
     const inventoryData = readInventory();
     const warehouseId = req.params.id;
-    const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId);
+    const foundWarehouse = warehouseData.find(warehouse => warehouseId === warehouse.id);
+    const foundWarehouseIndex = warehouseData.findIndex((warehouse) => warehouseId === warehouse.id);
     if (!foundWarehouse) {
         res.status(404).send("Warehouse not found");
     }
-    const newInventoryData = inventoryData.filter(item => item.warehouseID !== warehouseId);
-    writeInventory(newInventoryData);
-    const newWarehouseData = warehouseData.filter(warehouse => warehouse.id !== warehouseId);
-    writeWarehouses(newWarehouseData);
+    for (let i = inventoryData.length - 1; i >= 0; i--) {
+        if (inventoryData[i].warehouseID === warehouseId) {
+            inventoryData.splice(i, 1);
+        }
+    }
+    writeInventory(inventoryData);
+    warehouseData.splice(foundWarehouseIndex, 1);
+    writeWarehouses(warehouseData);
     res.status(200).json(foundWarehouse)
 }
 
