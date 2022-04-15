@@ -1,7 +1,7 @@
-const express = require("express");
+import express from 'express';
+import { getAllWarehouses, getSingleWarehouse, postNewWarehouse, updateWarehouse, deleteWarehouse } from '../controllers/warehouseController';
+
 const router = express.Router();
-const warehouseController = require('../controllers/warehouseController')
-const { getAllWarehouses, getSingleWarehouse, postNewWarehouse, updateWarehouse, deleteWarehouse } = warehouseController
 
 router
     .route('/')
@@ -17,4 +17,4 @@ router
 router
     .delete('/delete/:id', deleteWarehouse)
 
-    module.exports = router;
+export default router;

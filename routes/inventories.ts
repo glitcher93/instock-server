@@ -1,7 +1,7 @@
-const express = require("express");
+import express from 'express';
+import { getAllInventoryItems, getSingleInventoryItem, getInventoryForSingleWarehouse, postNewInventoryItem, updateInventoryItem, deleteInventoryItem } from '../controllers/inventoryController';
+
 const router = express.Router();
-const inventoryController = require('../controllers/inventoryController');
-const { getAllInventoryItems, getSingleInventoryItem, getInventoryForSingleWarehouse, postNewInventoryItem, updateInventoryItem, deleteInventoryItem } = inventoryController;
 
 router
     .route('/')
@@ -20,4 +20,4 @@ router
 router
     .delete('/delete/:id', deleteInventoryItem)
 
-module.exports = router;
+export default router;
