@@ -1,25 +1,24 @@
-const readWarehouses = require("../utils/readWrite").readWarehouses;
-const writeWarehouses = require("../utils/readWrite").writeWarehouses;
-const readInventory = require("../utils/readWrite").readInventory;
-const writeInventory = require("../utils/readWrite").writeInventory;
-const { v4: uuidv4 } = require("uuid");
+import { v4 as uuidv4 } from 'uuid';
+import { Request, Response } from "express";
+import { Warehouse } from "../utils/interfaces";
+import { readWarehouses, writeWarehouses, readInventory, writeInventory } from '../utils/readWrite';
 
-const getAllWarehouses = (req, res) => {
+export const getAllWarehouses = (req: Request, res: Response) => {
     const warehouseData = readWarehouses();
     res.status(200).json(warehouseData);
 }
 
-const getSingleWarehouse = (req, res) => {
+export const getSingleWarehouse = (req: Request, res: Response) => {
     const warehouseData = readWarehouses();
     const warehouseId = req.params.id;
-    const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId)
+    const foundWarehouse = warehouseData.find((warehouse: Warehouse) => warehouse.id === warehouseId)
     if (!foundWarehouse) {
         res.status(404).send("Warehouse not found")
     }
     res.status(200).json(foundWarehouse)
 }
 
-const postNewWarehouse = (req, res) => {
+export const postNewWarehouse = (req: Request, res: Response) => {
     const { name, address, city, country, contact } = req.body;
     const emailRegEx = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
     const phoneRegEx = /^\+\d{1,2}\s\(\d{3}\)\s\d{3}-\d{4}$/g;
@@ -46,7 +45,7 @@ const postNewWarehouse = (req, res) => {
     }
 }
 
-const updateWarehouse = (req, res) => {
+export const updateWarehouse = (req: Request, res: Response) => {
     const { name, address, city, country, contact } = req.body;
     const emailRegEx = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g;
     const phoneRegEx = /^\+\d{1,2}\s\(\d{3}\)\s\d{3}-\d{4}$/g;;
@@ -57,7 +56,7 @@ const updateWarehouse = (req, res) => {
     } else {
         const warehouseData = readWarehouses();
         const warehouseId = req.params.id;
-        const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId)
+        const foundWarehouse = warehouseData.find((warehouse: Warehouse) => warehouse.id === warehouseId)
         if (!foundWarehouse) {
             res.status(404).send("Warehouse not found")
         }
@@ -71,12 +70,12 @@ const updateWarehouse = (req, res) => {
     }
 }
 
-const deleteWarehouse = (req, res) => {
+export const deleteWarehouse = (req: Request, res: Response) => {
     const warehouseData = readWarehouses();
     const inventoryData = readInventory();
     const warehouseId = req.params.id;
-    const foundWarehouse = warehouseData.find(warehouse => warehouseId === warehouse.id);
-    const foundWarehouseIndex = warehouseData.findIndex((warehouse) => warehouseId === warehouse.id);
+    const foundWarehouse = warehouseData.find((warehouse: Warehouse) => warehouseId === warehouse.id);
+    const foundWarehouseIndex = warehouseData.findIndex((warehouse: Warehouse) => warehouseId === warehouse.id);
     if (!foundWarehouse) {
         res.status(404).send("Warehouse not found");
     }
@@ -89,12 +88,4 @@ const deleteWarehouse = (req, res) => {
     warehouseData.splice(foundWarehouseIndex, 1);
     writeWarehouses(warehouseData);
     res.status(200).json(foundWarehouse)
-}
-
-module.exports = {
-    getAllWarehouses,
-    getSingleWarehouse,
-    postNewWarehouse,
-    updateWarehouse,
-    deleteWarehouse
 }

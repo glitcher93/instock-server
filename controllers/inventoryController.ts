@@ -1,40 +1,40 @@
-const readInventory = require("../utils/readWrite").readInventory;
-const writeInventory = require("../utils/readWrite").writeInventory;
-const readWarehouses = require("../utils/readWrite").readWarehouses;
-const { v4: uuidv4 } = require("uuid");
+import { Request, Response } from "express";
+import { Item, Warehouse } from "../utils/interfaces";
+import { v4 as uuidv4 } from 'uuid';
+import { readInventory, writeInventory, readWarehouses } from "../utils/readWrite";
 
-const getAllInventoryItems = (req, res) => {
+export const getAllInventoryItems = (req: Request, res: Response) => {
     const inventoryData = readInventory();
     res.status(200).json(inventoryData);
 }
 
-const getSingleInventoryItem = (req, res) => {
+export const getSingleInventoryItem = (req: Request, res: Response) => {
     const inventoryData = readInventory();
     const inventoryId = req.params.id;
-    const foundItem = inventoryData.find(item => item.id === inventoryId);
+    const foundItem = inventoryData.find((item: Item) => item.id === inventoryId);
     if (!foundItem) {
         res.status(404).send("Item not found")
     }
     res.status(200).json(foundItem)
 }
 
-const getInventoryForSingleWarehouse = (req, res) => {
+export const getInventoryForSingleWarehouse = (req: Request, res: Response) => {
     const inventoryData = readInventory();
     const warehouseData = readWarehouses();
     const warehouseId = req.params.warehouseId;
-    const foundWarehouse = warehouseData.find(warehouse => warehouse.id === warehouseId);
+    const foundWarehouse = warehouseData.find((warehouse: Warehouse) => warehouse.id === warehouseId);
     if (!foundWarehouse) {
         res.status(404).send("Warehouse not found!");
     };
-    const inventory = inventoryData.filter(item => item.warehouseID === foundWarehouse.id);
+    const inventory = inventoryData.filter((item: Item) => item.warehouseID === foundWarehouse.id);
     res.status(200).json(inventory);
 }
 
-const postNewInventoryItem = (req, res) => {
+export const postNewInventoryItem = (req: Request, res: Response) => {
     const inventoryData = readInventory();
     const warehouseData = readWarehouses();
     const {warehouseName, itemName, description, category, status, quantity} = req.body;
-    const foundWarehouse = warehouseData.find(warehouse => warehouse.name === warehouseName);
+    const foundWarehouse = warehouseData.find((warehouse: Warehouse) => warehouse.name === warehouseName);
     if (!foundWarehouse) {
         res.status(404).send("Warehouse not found!")
     }
@@ -53,15 +53,15 @@ const postNewInventoryItem = (req, res) => {
     res.status(201).json(newItem)
 }
 
-const updateInventoryItem = (req, res) => {
+export const updateInventoryItem = (req: Request, res: Response) => {
     const inventoryData = readInventory();
     const warehouseData = readWarehouses();
     const {warehouseName, itemName, description, category, status, quantity} = req.body;
-    const foundWarehouse = warehouseData.find(warehouse => warehouse.name === warehouseName);
+    const foundWarehouse = warehouseData.find((warehouse: Warehouse) => warehouse.name === warehouseName);
     if (!foundWarehouse) {
         res.status(404).send("Warehouse not found!")
     }
-    const foundItem = inventoryData.find(item => item.id === req.params.id);
+    const foundItem = inventoryData.find((item: Item) => item.id === req.params.id);
     foundItem.warehouseID = foundWarehouse.id || foundItem.warehouseID;
     foundItem.warehouseName = warehouseName || foundItem.warehouseName;
     foundItem.itemName = itemName || foundItem.itemName;
@@ -76,24 +76,15 @@ const updateInventoryItem = (req, res) => {
     res.status(201).json(foundItem)
 }
 
-const deleteInventoryItem = (req, res) => {
+export const deleteInventoryItem = (req: Request, res: Response) => {
     const inventoryData = readInventory();
     const itemId = req.params.id;
-    const foundItem = inventoryData.find(item => itemId === item.id);
-    const foundItemIndex = inventoryData.findIndex(item => item.id === itemId);
+    const foundItem = inventoryData.find((item: Item) => itemId === item.id);
+    const foundItemIndex = inventoryData.findIndex((item: Item) => item.id === itemId);
     if (!foundItem) {
         res.status(404).send("Item not found!")
     }
     inventoryData.splice(foundItemIndex, 1)
     writeInventory(inventoryData)
     res.status(200).json(foundItem)
-}
-
-module.exports = {
-    getAllInventoryItems,
-    getSingleInventoryItem,
-    getInventoryForSingleWarehouse,
-    postNewInventoryItem,
-    updateInventoryItem,
-    deleteInventoryItem
 }
