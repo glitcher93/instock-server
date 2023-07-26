@@ -14,8 +14,8 @@ const app: Express = express();
 
 
 app.use(express.json());
-app.use(jsonServer.router(path.join(__dirname, 'data/inventories.json')));
-app.use(jsonServer.router(path.join(__dirname, 'data/warehouses.json')));
+app.use(jsonServer.router('../data/inventories.json'));
+app.use(jsonServer.router('../data/warehouses.json'));
 app.use(cors());
 app.use('/warehouses', warehouseRoutes);
 app.use('/inventory', inventoryRoutes);
